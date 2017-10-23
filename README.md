@@ -10,7 +10,7 @@ http://YourPath/admin/common_x/index;
 
 ngixn重写配置在nginx.conf里,请按合适的进行适当修改配置
 
-已有一个单表维护demo在Member下
+已有一个单表维护demo在Member控制器下
 
 登录用户(超级管理员)
 admin
