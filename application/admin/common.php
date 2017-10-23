@@ -110,34 +110,10 @@ function get_model_by_id($id){
    return $model = \think\Db::name('Model')->where('id',$id)->value('title');
 }
 
-// 获取属性类型信息
-function get_attribute_type($type=''){
-    // TODO 可以加入系统配置
-    static $_type = array(
-        'num'       =>  array('数字','int(10) UNSIGNED NOT NULL'),
-        'string'    =>  array('字符串','varchar(255) NOT NULL'),
-        'textarea'  =>  array('文本框','text NOT NULL'),
-        'date'      =>  array('日期','int(10) NOT NULL'),
-        'datetime'  =>  array('时间','int(10) NOT NULL'),
-        'bool'      =>  array('布尔','tinyint(2) NOT NULL'),
-        'select'    =>  array('枚举','char(50) NOT NULL'),
-        'radio'     =>  array('单选','char(10) NOT NULL'),
-        'checkbox'  =>  array('多选','varchar(100) NOT NULL'),
-        'editor'    =>  array('编辑器','text NOT NULL'),
-        'picture'   =>  array('上传图片','int(10) UNSIGNED NOT NULL'),
-        'file'      =>  array('上传附件','int(10) UNSIGNED NOT NULL'),
-        'pice'      =>  array('价格','decimal(5,2) NOT NULL'),
-        'function'  =>  array('函数','int(10) UNSIGNED NOT NULL'),
-        'hook'      =>  array('插件','int(10) UNSIGNED NOT NULL'),
-    );
-    return $type?$_type[$type][0]:$_type;
-}
-
 /**
  * 获取对应状态的文字信息
  * @param int $status
  * @return string 状态文字 ，false 未获取到
- *
  */
 function get_status_title($status = null){
     if(!isset($status)){
@@ -159,24 +135,6 @@ function show_status_op($status) {
         case 1  : return    '禁用';     break;
         case 2  : return    '审核';       break;
         default : return    false;      break;
-    }
-}
-
-/**
- * 获取文档的类型文字
- * @param string $type
- * @return string 状态文字 ，false 未获取到
- *
- */
-function get_document_type($type = null){
-    if(!isset($type)){
-        return false;
-    }
-    switch ($type){
-        case 1  : return    '目录'; break;
-        case 2  : return    '主题'; break;
-        case 3  : return    '段落'; break;
-        default : return    false;  break;
     }
 }
 
@@ -244,34 +202,6 @@ function extra_menu($extra_menu,&$base_menu){
     }
 }
 
-/**
- * 获取参数的所有父级分类
- * @param int $cid 分类id
- * @return array 参数分类和父类的信息集合
- *
- */
-function get_parent_category($cid){
-    if(empty($cid)){
-        return false;
-    }
-    $cates  =   db('Category')->where(array('status'=>1))->field('id,title,pid')->order('sort')->select();
-    $child  =   get_category($cid); //获取参数分类的信息
-    $pid    =   $child['pid'];
-    $temp   =   array();
-    $res[]  =   $child;
-    while(true){
-        foreach ($cates as $key=>$cate){
-            if($cate['id'] == $pid){
-                $pid = $cate['pid'];
-                array_unshift($res, $cate); //将父分类插入到数组第一个元素前
-            }
-        }
-        if($pid == 0){
-            break;
-        }
-    }
-    return $res;
-}
 
 /**
  * 检测验证码
@@ -282,41 +212,6 @@ function get_parent_category($cid){
 function check_verify($code, $id = 1){
     $verify = new \Think\Verify();
     return $verify->check($code, $id);
-}
-
-/**
- * 获取当前分类的文档类型
- * @param int $id
- * @return array 文档类型数组
- *
- */
-function get_type_bycate($id = null){
-    if(empty($id)){
-        return false;
-    }
-    $type_list  =   config('document_model_type');
-    $model_type =   db('Category')->getFieldById($id, 'type');
-    $model_type =   explode(',', $model_type);
-    foreach ($type_list as $key=>$value){
-        if(!in_array($key, $model_type)){
-            unset($type_list[$key]);
-        }
-    }
-    return $type_list;
-}
-
-/**
- * 获取当前文档的分类
- * @param int $id
- * @return array 文档类型数组
- *
- */
-function get_cate($cate_id = null){
-    if(empty($cate_id)){
-        return false;
-    }
-    $cate   =   db('Category')->where('id='.$cate_id)->value('title');
-    return $cate;
 }
 
 
@@ -335,10 +230,6 @@ function parse_function_attr($string,$value){
         }
     }
     return $arr?$arr:[];
-}
-// 获取子文档数目
-function get_subdocument_count($id=0){
-    return  M('Document')->where('pid='.$id)->count();
 }
 
 
