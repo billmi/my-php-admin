@@ -1,0 +1,196 @@
+{extend name="public/base" /}
+
+{block name="body"}
+<script type="text/javascript" src="__PUBLIC__/static/uploadify/jquery.uploadify.min.js"></script>
+
+
+
+<div class="main-title">
+    <h2>组件查询库</h2>
+</div>
+<form action="{:url()}" method="post" class="form-horizontal">
+    <div class="form-item">
+        <label class="item-label">标准输入框<span class="check-tips">（标准输入框）</span></label>
+        <div class="controls">
+            <input type="text" class="text input-large" name="title" value="{$info.title|default=''}">
+        </div>
+    </div>
+    <div class="form-item">
+        <label class="item-label">小框<span class="check-tips">（用于分组显示的顺序）</span></label>
+        <div class="controls">
+            <input type="text" class="text input-small" name="sort" value="{$info.sort|default=0}">
+        </div>
+    </div>
+    <div class="form-item">
+        <label class="item-label">日期<span class="check-tips"></span></label>
+        <div class="controls">
+            <input type="text" class="text input-large date" name="date" value="" placeholder="点击事件触发">
+        </div>
+    </div>
+    <div class="form-item">
+        <label class="item-label">图片上传:<span class="check-tips"></span></label>
+        <div class="controls">
+            <input type="file" id="upload_picture_{$field.name}">
+            <input type="hidden" name="{$field.name}" id="cover_id_{$field.name}"/>
+            <span>建议大小：200*200像素</span>
+            <div class="upload-img-box">
+            </div>
+        </div>
+        <script type="text/javascript">
+            //上传图片
+            /* 初始化上传插件 */
+            $("#upload_picture_{$field.name}").uploadify({
+                "height"          : 30,
+                "swf"             : "__PUBLIC__/static/uploadify/uploadify.swf",
+                "fileObjName"     : "download",
+                "buttonText"      : "上传图片",
+                "uploader"        : "{:url('File/uploadPicture',array('session_id'=>session_id()))}",
+                "width"           : 120,
+                'removeTimeout'	  : 1,
+                'fileTypeExts'	  : '*.jpg; *.png; *.gif;',
+                "onUploadSuccess" : uploadPicture{$field.name},
+            'onFallback' : function() {
+                alert('未检测到兼容版本的Flash.');
+            }
+            });
+            function uploadPicture{$field.name}(file, data){
+                var data = $.parseJSON(data);
+                var src = '';
+                if(data.status){
+                    $("#cover_id_{$field.name}").val(data.id);
+                    src = data.url || '__ROOT__' + data.path
+                    $("#cover_id_{$field.name}").parent().find('.upload-img-box').html(
+                        '<div class="upload-pre-item"><img src="' + src + '"/></div>'
+                    );
+                } else {
+                    updateAlert(data.info);
+                    setTimeout(function(){
+                        $('#top-alert').find('button').click();
+                        $(that).removeClass('disabled').prop('disabled',false);
+                    },1500);
+                }
+            }
+        </script>
+    </div>
+
+    <div class="form-item">
+        <label class="item-label">文件上传:<span class="check-tips" style="color: red;">注意:文件上传与图片上传接口不同</span></label>
+        <div class="controls">
+            <input type="file" id="upload_file_{$field.name}">
+            <input type="hidden" name="{$field.name}" value="{$data[$field['name']]}"/>
+            <div class="upload-img-box">
+                {present name="data[$field['name']]"}
+                <div class="upload-pre-file"><span class="upload_icon_all"></span>{$data[$field['name']]}</div>
+                {/present}
+            </div>
+        </div>
+        <script type="text/javascript">
+            //上传图片
+            /* 初始化上传插件 */
+            $("#upload_file_{$field.name}").uploadify({
+                "height"          : 30,
+                "swf"             : "__PUBLIC__/static/uploadify/uploadify.swf",
+                "fileObjName"     : "download",
+                "buttonText"      : "上传附件",
+                "uploader"        : "{:url('File/upload',array('session_id'=>session_id()))}",
+                "width"           : 120,
+                'removeTimeout'	  : 1,
+                "onUploadSuccess" : uploadFile{$field.name},
+            'onFallback' : function() {
+                alert('未检测到兼容版本的Flash.');
+            }
+            });
+            function uploadFile{$field.name}(file, data){
+                var data = $.parseJSON(data);
+                if(data.status){
+                    var name = "{$field.name}";
+                    $("input[name="+name+"]").val(data.data);
+                    $("input[name="+name+"]").parent().find('.upload-img-box').html(
+                        "<div class=\"upload-pre-file\"><span class=\"upload_icon_all\"></span>" + data.info + "</div>"
+                    );
+                } else {
+                    updateAlert(data.info);
+                    setTimeout(function(){
+                        $('#top-alert').find('button').click();
+                        $(that).removeClass('disabled').prop('disabled',false);
+                    },1500);
+                }
+            }
+        </script>
+    </div>
+    <div class="form-item">
+        <label class="item-label">选择框<span class="check-tips">（选择框）</span></label>
+        <div class="controls">
+            <?php if(isset($info['id'])){ ?>
+            <select name="type">
+                <option value="1" <?php if($info['type'] == 1){ ?>selected<?php } ?>>系统</option>
+                <option value="2" <?php if($info['type'] == 2){ ?>selected<?php } ?>>用户</option>
+            </select>
+            <?php }else{
+                $_currType = input('type',1);
+              ?>
+            <select name="type">
+                <?php if($_currType == 1){ ?><option value="1">系统</option><?php } ?>
+                <?php if($_currType == 2){ ?><option value="2">用户</option><?php } ?>
+            </select>
+            <?php } ?>
+
+        </div>
+    </div>
+    <div class="form-item">
+        <label class="item-label">单选框<span class="check-tips"></span></label>
+        <div class="controls">
+
+        </div>
+    </div>
+
+    <div class="form-item">
+        <label class="item-label">单选框<span class="check-tips"></span></label>
+        <div class="controls">
+            <label class="radio"><input type="radio" name="hide" value="1">是</label>
+            <label class="radio"><input type="radio" name="hide" value="0">否</label>
+        </div>
+    </div>
+
+    <div class="form-item">
+        <label class="item-label">多媒体文本:<span class="check-tips">多媒体文本</span></label>
+        <label class="textarea">
+            <textarea name="{$field.name}">{$field.value}</textarea>
+            {:hook('adminArticleEdit', array('name'=>$field['name'],'value'=>$field['value']))}
+        </label>
+    </div>
+
+    <div class="form-item">
+        <input type="hidden" name="id" value="{$info.id|default=''}">
+        <button class="btn submit-btn ajax-posts" id="submit" type="submit" target-form="form-horizontal">确 定</button>
+        <button class="btn btn-return" onclick="javascript:history.back(-1);return false;">返 回</button>
+    </div>
+</form>
+{/block}
+
+{block name="script"}
+
+<link href="__PUBLIC__/static/datetimepicker/css/datetimepicker.css" rel="stylesheet" type="text/css">
+<!--如果要使用其他颜色覆盖样式 -->
+{php}if(config('COLOR_STYLE')=='blue_color') echo '<link href="__PUBLIC__/static/datetimepicker/css/datetimepicker_blue.css" rel="stylesheet" type="text/css">';{/php}
+<!--如果要使用其他颜色覆盖样式 -->
+<link href="__PUBLIC__/static/datetimepicker/css/dropdown.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="__PUBLIC__/static/datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript" src="__PUBLIC__/static/datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
+
+<script type="text/javascript">
+
+    //日期
+    $('.date').datetimepicker({
+        format: 'yyyy-mm-dd',
+        language:"zh-CN",
+        minView:2,
+        autoclose:true
+    });
+
+    Think.setValue("pid", {$info.pid|default = 0});
+    Think.setValue("hide", {$info.hide|default = 0});
+    //导航高亮
+    highlight_subnav('{:url('index')}');
+</script>
+{/block}
