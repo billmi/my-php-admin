@@ -6,7 +6,7 @@ https://github.com/593657688/twothink
 
 请先导入install.sql文件，基本已经很纯净了
 通用组件集成在路由
-http://YourPath/admin/common_x/index;
+http://YourPath/admin/commonx/index;
 
 ngixn重写配置在nginx.conf里,请按合适的进行适当修改配置
 
