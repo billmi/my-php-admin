@@ -2,7 +2,7 @@
 namespace app\admin\controller;
 
 
-class CommonX extends Admin {
+class Commonx extends Admin {
 
 
     public function index(){
