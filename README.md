@@ -1,8 +1,4 @@
-首先:感谢twothink开源团队
-https://github.com/593657688/twothink
-
-# Simple-Twothink
-基于twothink开源项目简化,纯净,通用后台Cms
+base tp5
 
 1.请先导入install.sql文件，基本已经很纯净了
 
