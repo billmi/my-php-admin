@@ -14,7 +14,9 @@ base tp5
 
 普通用户 user123 123456
 
-Api模块已写整理好,页数计算,需要自己阅读common\base\ApiBase里面的lists方法
+Api模块已写整理好,页数计算
+
+需要自己阅读common\base\ApiBase里面的lists方法
 其他尽量使用composer做一些组件包管理吧~!~!
 
 
