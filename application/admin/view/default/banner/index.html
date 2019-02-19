@@ -1,0 +1,93 @@
+{extend name="public/base" /}
+
+{block name="body"}
+<?php $_field = input('field');?>
+<!-- 标题栏 -->
+<div class="main-title">
+    <h2>Banner管理列表</h2>
+</div>
+<div class="cf">
+    <div class="fl">
+        <a class="btn" href="{:url('edit')}">新 增</a>
+        <button class="btn ajax-post" url="{:url('changeStatus?status=1')}" target-form="ids">启 用</button>
+        <button class="btn ajax-post" url="{:url('changeStatus?status=0')}" target-form="ids">禁 用</button>
+        <button class="btn ajax-post confirm" url="{:url('changeStatus?status=-1')}" target-form="ids">删 除</button>
+    </div>
+
+    <!-- 高级搜索 -->
+    <div class="search-form fr cf">
+        <form method="GET" id="search_f1" action="">
+            <div class="sleft">
+                <select name="field">
+                    <option value="phone" {if condition="$_field eq 'title'" }selected{
+                    /if}>图片名称</option>
+                </select>
+            </div>
+            <div class="sleft">
+                <input type="text" name="value" class="search-input" value="{:input('value')}" placeholder="输入图片名称">
+                <a class="sch-btn" href="javascript:void(0);"><i class="btn-search" id="search_f"></i></a>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- 数据列表 -->
+<div class="data-table table-striped">
+    <table class="">
+        <thead>
+        <tr>
+            <th class="row-selected row-selected"><input class="check-all" type="checkbox"/></th>
+            <th class="">UID</th>
+            <th class="">名称</th>
+            <th class="">描述</th>
+            <th class="">图片</th>
+            <th class="">创建时间</th>
+            <th class="">修改时间</th>
+            <th class="">状态</th>
+            <th class="">操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        {notempty name="_list"}
+        {volist name="_list" id="vo"}
+        <tr>
+            <td><input class="ids" type="checkbox" name="ids[]" value="{$vo.id}"/></td>
+            <td>{$vo.id}</td>
+            <td>{$vo.title}</td>
+            <td>{$vo.description}</td>
+            <td><img src="{$vo.url}" style="width: 200px;height: 100px;"/></td>
+            <td><span>{$vo.create_time|date='Y-m-d h:i:s',###}</span></td>
+            <td><span>{$vo.update_time|date='Y-m-d h:i:s',###}</span></td>
+            <td>
+                {if condition="$vo['status'] eq 1"}启用{/if}
+                {if condition="$vo['status'] eq 0"}禁用{/if}
+            </td>
+            <td>
+                <a href="edit?id={$vo.id}">查看</a>
+                {eq name="vo.status" value="1"}
+                <a href="{:url('Banner/changeStatus?status=0&ids='.$vo['id'])}" class="ajax-get">禁用</a>
+                {else/}
+                <a href="{:url('Banner/changeStatus?status=1&ids='.$vo['id'])}" class="ajax-get">正常</a>
+                {/eq}
+                <a href="{:url('Banner/changeStatus?status=-1&ids='.$vo['id'])}" class="confirm ajax-get">删除</a>
+            </td>
+        </tr>
+        {/volist}
+        {else/}
+        <td colspan="10" class="text-center"> aOh! 暂时还没有内容!</td>
+        {/notempty}
+        </tbody>
+    </table>
+</div>
+<div class="page">
+    {$_page}
+</div>
+{/block}
+
+{block name="script"}
+<script src="__PUBLIC__/static/thinkbox/jquery.thinkbox.js"></script>
+<script>
+    function submitCheck() {
+        return true;
+    }
+</script>
+{/block}

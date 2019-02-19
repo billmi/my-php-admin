@@ -1,0 +1,121 @@
+{extend name="public/base" /}
+
+{block name="body"}
+<script type="text/javascript" src="__PUBLIC__/static/uploadify/jquery.uploadify.min.js"></script>
+
+<div class="main-title">
+    <h2>Banner编辑</h2>
+</div>
+<form action="{:url()}" method="post" class="form-horizontal">
+    <div class="form-item">
+        <label class="item-label">标题<span class="check-tips">（标题）</span></label>
+        <div class="controls">
+            <input type="text" class="text input-large" name="title" value="{$info.title|default=''}">
+        </div>
+    </div>
+    <div class="form-item cf">
+        <label class="item-label">描述信息</label>
+        <div class="controls">
+            <label class="textarea input-large">
+                <textarea name="description">{$info.description|default=''}</textarea>
+            </label>
+        </div>
+    </div>
+    <div class="form-item">
+        <label class="item-label">排序<span class="check-tips">（sort）</span></label>
+        <div class="controls">
+            <input type="text" class="text input-large" name="sort" value="{$info.sort|default='1'}">
+        </div>
+    </div>
+    <div class="form-item">
+        <label class="item-label">图片上传:<span class="check-tips"></span></label>
+        <div class="controls">
+            <input type="file" id="upload_picture_{$field.name}">
+            <input type="hidden" name="{$field.name}" id="cover_id_{$field.name}"/>
+            <input type="hidden" name="url" value="{$info.url|default=''}"/>
+            <div class="upload-img-box">
+                {if condition="strtoupper($user['name']) neq 'THINKPHP'"}
+                    <div class="upload-pre-item"><span src="#" style="width: 200px;height: 200px;background-color: dimgrey;display: block;"></span>
+                    {else /}
+                    <div class="upload-pre-item"><img src="{$info.url}"/>
+                {/if}
+            </span>
+        </div>
+        <script type="text/javascript">
+            //上传图片
+            /* 初始化上传插件 */
+            $("#upload_picture_{$field.name}").uploadify({
+                "height"          : 30,
+                "swf"             : "__PUBLIC__/static/uploadify/uploadify.swf",
+                "fileObjName"     : "download",
+                "buttonText"      : "上传图片",
+                "uploader"        : "{:url('File/uploadPicture',array('session_id'=>session_id()))}",
+                "width"           : 120,
+                'removeTimeout'	  : 1,
+                'fileTypeExts'	  : '*.jpg; *.png; *.gif;',
+                "onUploadSuccess" : uploadPicture{$field.name},
+            'onFallback' : function() {
+                alert('未检测到兼容版本的Flash.');
+            }
+            });
+            function uploadPicture{$field.name}(file, data){
+                var data = $.parseJSON(data);
+                var src = '';
+                if(data.status){
+                    $("#cover_id_{$field.name}").val(data.id);
+                    $("[name=url]").val(data.path);
+                    src = data.url || '__ROOT__' + data.path;
+                    $("#cover_id_{$field.name}").parent().find('.upload-img-box').html("").html(
+                        '<div class="upload-pre-item"><img style="width: 200px;height: 200px;" src="' + src + '"/></div>'
+                    );
+                } else {
+                    updateAlert(data.info);
+                    setTimeout(function(){
+                        $('#top-alert').find('button').click();
+                        $(that).removeClass('disabled').prop('disabled',false);
+                    },1500);
+                }
+            }
+        </script>
+    </div>
+
+
+
+
+    <?php $id = input('id');
+             if($id){
+       ?>
+    <input type="hidden" name="id" value="{:$id}">
+    <?php } ?>
+    <div class="form-item">
+        <button class="btn submit-btn ajax-post" id="submit" type="submit" target-form="form-horizontal">确 定</button>
+        <button class="btn btn-return" onclick="javascript:history.back(-1);return false;">返 回</button>
+    </div>
+</form>
+{/block}
+
+{block name="script"}
+<script type="text/javascript">
+    function submitCheck() {
+        var title = $("[name=title]").val();
+        var dec = $("[name=description]").val();
+        var url = $("[name=url]").val();
+
+        if(title == '' || !title){
+            alert("标题不能为空!");
+            return false
+        }
+        if(dec == '' || !dec){
+            alert("描述信息不能为空!");
+            return false
+        }
+        if(url == '' || !url){
+            alert("请上传图片!");
+            return false
+        }
+        return true;
+    }
+    //导航高亮
+    highlight_subnav("{:url('Banner/index')}");
+</script>
+{/block}
