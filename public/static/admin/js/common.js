@@ -67,10 +67,8 @@
         if( ($(this).attr('type')=='submit') || (target = $(this).attr('href')) || (target = $(this).attr('url')) ){
             form = $('.'+target_form);
             if (submitCheck && typeof(submitCheck) == "function") {
-                if({$_Faction} != "index"){
                     if(!submitCheck())
                         return false;
-                }
             }
             if ($(this).attr('hide-data') === 'true'){//无数据时也可以使用的功能
             	form = $('.hide-data');
