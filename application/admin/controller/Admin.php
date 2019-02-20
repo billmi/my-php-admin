@@ -153,8 +153,8 @@ class Admin extends Controller
             if ($id) {
                 $id = array_unique($id);
                 $id = is_array($id) ? implode(',', $id) : $id;
-                //如存在id字段，则加入该条件
-                $fields = db()->getTableFields(array('table' => config('database.prefix') . $model));
+                
+                $fields = db()->table(config('database.prefix') . $model)->getTableFields();
 
                 if (in_array('id', $fields) && !empty($id)) {
                     $where = array_merge(array('id' => array('in', $id)), (array)$where);
