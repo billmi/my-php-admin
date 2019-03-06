@@ -283,6 +283,7 @@ class Admin extends Controller
         // 获取主菜单
         $where['pid'] = 0;
         $where['hide'] = 0;
+        $where['status'] = 1;
         if (is_administrator(UID)) {
             $where['type'] = \app\admin\model\Menu::SYS_TYPE;
         } else {
